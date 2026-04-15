@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Dated output files (keep only latest)
+data/prices_2*.csv
+data/momentum_2*.csv
+data/momentum_2*.json
+
+# Secrets
+.env
