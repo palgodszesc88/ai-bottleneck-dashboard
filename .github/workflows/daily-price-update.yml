@@ -2,7 +2,9 @@ name: Daily Price Update
 
 on:
   schedule:
-    - cron: '30 17 * * 1-5'
+    - cron: '0 23 * * 0-4'
+    - cron: '5 8 * * 1-5'
+    - cron: '32 13 * * 1-5'
   workflow_dispatch:
 
 jobs:
@@ -47,6 +49,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "price update $(date +%Y-%m-%d)"
+            git commit -m "price update $(date +%Y-%m-%d) $(date +%H:%M)UTC"
             git push
           fi
