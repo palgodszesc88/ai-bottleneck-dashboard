@@ -129,9 +129,9 @@ def update_macro(jsx, macro_data):
                 changes += 1
                 jsx = new_jsx
 
-    # Update date
+    # Update date — only in MACRO_ALARMS object, not in UI display
     jsx = re.sub(
-        r'(updated: ")[^"]+(")',
+        r'(var MACRO_ALARMS = \{\s*updated: ")[^"]+(")',
         rf"\g<1>{date_str}\2",
         jsx
     )
