@@ -2,17 +2,16 @@ name: Daily Price Update
 
 on:
   schedule:
-    # 17:30 UTC = 19:30 CET (summer) / 18:30 CET (winter)
-    - cron: '30 17 * * 1-5'  # Mon-Fri only
-  workflow_dispatch:  # manual trigger button in GitHub UI
+    - cron: '30 17 * * 1-5'
+  workflow_dispatch:
 
 jobs:
   update-prices:
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: write
-    
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -25,38 +24,29 @@ jobs:
       - name: Install dependencies
         run: pip install yfinance
 
-      - name: Fetch prices & momentum
+      - name: Fetch prices and momentum
         run: |
           cd scripts
           python update_prices.py --fast
-          # Move output files to data/
           mkdir -p ../data
           mv -f prices_latest.json ../data/ 2>/dev/null || true
           mv -f momentum_latest.json ../data/ 2>/dev/null || true
           mv -f macro_alarms_latest.json ../data/ 2>/dev/null || true
           mv -f prices_*.csv ../data/ 2>/dev/null || true
           mv -f momentum_companies.js ../data/ 2>/dev/null || true
-          echo "=== Files in data/ ==="
-          ls -la ../data/*.json 2>/dev/null || echo "No JSON files found"
+          ls -la ../data/
 
       - name: Patch dashboard
         run: python scripts/patch_dashboard.py
 
-      - name: Commit & push
+      - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/ dashboard/
-          # Check if there are changes to commit
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            SIGNALS=$(python -c "
-import json
-with open('data/prices_latest.json') as f:
-    d = json.load(f)
-print(f\"{d['date'][:10]} — {d['count']} prices\")
-")
-            git commit -m "price update ${SIGNALS}"
+            git commit -m "price update $(date +%Y-%m-%d)"
             git push
           fi
