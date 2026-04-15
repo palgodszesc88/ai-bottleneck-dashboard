@@ -28,6 +28,7 @@ DASHBOARD_PATH = os.path.join(REPO_ROOT, "dashboard", "ai-bottleneck-dashboard-v
 PRICES_PATH = os.path.join(REPO_ROOT, "data", "prices_latest.json")
 MOMENTUM_PATH = os.path.join(REPO_ROOT, "data", "momentum_latest.json")
 MACRO_PATH = os.path.join(REPO_ROOT, "data", "macro_alarms_latest.json")
+RSI_PATH = os.path.join(REPO_ROOT, "data", "rsi_latest.json")
 
 # Signal exceptions
 SIGNAL_OVERRIDES = {
@@ -137,6 +138,31 @@ def update_macro(jsx, macro_data):
     )
 
     print(f"  🚨 Macro alarms updated: {changes} values, date={date_str}")
+    return jsx
+
+
+def update_rsi(jsx, rsi_data):
+    """Replace RSI_DATA block with fresh RSI values."""
+    rsi_values = rsi_data.get("rsi", {})
+    if not rsi_values:
+        print("  ⚠️  No RSI data")
+        return jsx
+
+    lines = []
+    for k in sorted(rsi_values.keys()):
+        v = rsi_values[k]
+        lines.append(f'  "{k}":{v}')
+
+    new_block = "var RSI_DATA = {\n" + ",\n".join(lines) + "\n};"
+
+    start = jsx.find("var RSI_DATA = {")
+    if start == -1:
+        print("  ⚠️  RSI_DATA block not found")
+        return jsx
+
+    end = jsx.find("};", start) + 2
+    jsx = jsx[:start] + new_block + jsx[end:]
+    print(f"  📈 RSI updated: {len(rsi_values)} entries")
     return jsx
 
 
@@ -254,6 +280,7 @@ def main():
     prices_data = load_json(PRICES_PATH)
     momentum_data = load_json(MOMENTUM_PATH)
     macro_data = load_json(MACRO_PATH)
+    rsi_data = load_json(RSI_PATH)
 
     if not os.path.exists(DASHBOARD_PATH):
         print(f"  ❌ Dashboard not found: {DASHBOARD_PATH}")
@@ -273,6 +300,9 @@ def main():
 
     if macro_data:
         jsx = update_macro(jsx, macro_data)
+
+    if rsi_data:
+        jsx = update_rsi(jsx, rsi_data)
 
     # Recalculate signals
     jsx, counts = recalculate_signals(jsx)

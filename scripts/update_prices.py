@@ -433,7 +433,8 @@ def fetch_momentum_data():
             sma_window = min(10, len(closes))
             sma_10m = float(closes.iloc[-sma_window:].mean())
 
-            # --- Daily data for more precise 200-day SMA ---
+            # --- Daily data for more precise 200-day SMA + RSI ---
+            rsi_val = None
             try:
                 daily = yf.download(
                     yf_ticker,
@@ -452,6 +453,7 @@ def fetch_momentum_data():
                     sma_window_d = min(200, len(d_closes))
                     sma_200d = float(d_closes.iloc[-sma_window_d:].mean())
                     sma_10m = sma_200d  # Override with more precise daily SMA
+                    rsi_val = calculate_rsi(d_closes)
             except Exception:
                 pass  # Fall back to monthly SMA
 
@@ -460,6 +462,7 @@ def fetch_momentum_data():
                 "price1mAgo": round(price_1m, 4),
                 "price12mAgo": round(price_12m, 4),
                 "sma10m": round(sma_10m, 4),
+                "rsi": rsi_val,
             }
 
             print(f"  ✅ {dash_ticker:12s} now={price_now:>10.2f}  12m={price_12m:>10.2f}  sma={sma_10m:>10.2f}")
@@ -469,6 +472,43 @@ def fetch_momentum_data():
             print(f"  ❌ {dash_ticker:12s} ERROR: {e}")
 
     return results, errors
+
+
+# ============================================================
+# RSI CALCULATION
+# ============================================================
+
+def calculate_rsi(closes, period=14):
+    """Calculate RSI(14) from daily close prices."""
+    if len(closes) < period + 1:
+        return None
+    deltas = closes.diff().dropna()
+    gains = deltas.where(deltas > 0, 0.0)
+    losses = (-deltas).where(deltas < 0, 0.0)
+    avg_gain = gains.iloc[:period].mean()
+    avg_loss = losses.iloc[:period].mean()
+    if avg_loss == 0:
+        return 100.0
+    for i in range(period, len(deltas)):
+        avg_gain = (avg_gain * (period - 1) + gains.iloc[i]) / period
+        avg_loss = (avg_loss * (period - 1) + losses.iloc[i]) / period
+    if avg_loss == 0:
+        return 100.0
+    rs = avg_gain / avg_loss
+    return round(100 - (100 / (1 + rs)), 1)
+
+
+def save_rsi_json(rsi_data, filename):
+    """Save RSI data to JSON."""
+    output = {
+        "date": datetime.now().strftime("%Y-%m-%dT%H:%M"),
+        "period": 14,
+        "count": len(rsi_data),
+        "rsi": rsi_data,
+    }
+    with open(filename, "w") as f:
+        json.dump(output, f, indent=2)
+    print(f"  💾 {filename} saved ({len(rsi_data)} tickers)")
 
 
 # ============================================================
@@ -948,6 +988,13 @@ def main():
 
     save_momentum_json(momentum_results, "momentum_latest.json")
     save_momentum_js(momentum_results, "momentum_companies.js")
+
+    # ── KROK 3b: RSI(14) ──
+    rsi_data = {}
+    for dash_ticker, prices in mom_prices.items():
+        if prices.get("rsi") is not None:
+            rsi_data[dash_ticker] = prices["rsi"]
+    save_rsi_json(rsi_data, "rsi_latest.json")
 
     if save_csv_flag:
         save_momentum_csv(momentum_results, f"momentum_{date_str}.csv")

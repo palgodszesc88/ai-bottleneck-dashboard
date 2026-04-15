@@ -97,6 +97,8 @@ const MOMENTUM_DATA = {
   "XRP":{ret12minus1:-38.8,tsPositive:false,aboveSMA:false}
 };
 
+var RSI_DATA = {};
+
 function TechBadge({ ticker }) {
   var m = MOMENTUM_DATA[ticker];
   if (!m) return null;
@@ -169,7 +171,7 @@ const SECTORS = [
     { ticker: "VICR", name: "Vicor Corporation", price: 190, analyzed: true, fairValueLow: 130, fairValueHigh: 200, entryZone: 110, bargain: 85, expensive: 250, analystTarget: 209, signal: "yellow", conviction: "MEDIUM", note: "LEKKO DROGO (+9% vs mid $165). CHIP-LEVEL POWER DELIVERY pioneer — 48V-to-1V VPD bezposrednio przy GPU.", pe: "Trailing ~69x ($2.61 EPS). Fwd ~67x (FY26E $2.69). FY27E $4.73 → ~38x", revGrowth: "+26.1% FY25 ($452.7M) ale $45M jednorazowa ugoda = organic ~$408M (+12-15%)", moat: "PIONIER VPD (Vertical Power Delivery) — moduly zasilania bezposrednio pod procesorem. Opatentowana", dividend: "0%", hasDR: true, verdict: "SPOLKA #83. Vicor = pioneer chip-level VPD z unikalna technologia i fortress balance sheet (zero ..." },
 
       { ticker: "SCHN.PA", name: "Schneider Electric (EUR)", price: 268, analyzed: true, fairValueLow: 220, fairValueHigh: 340, entryZone: 220, bargain: 180, expensive: 380, analystTarget: 294, signal: "blue", conviction: "HIGH", note: "PONIZEJ FV! Grid-to-Chip lider = najbardziej zintegrowany stos technologiczny w AI power+cooling. FY25 40.2B EUR (+9% organic), FCF 4.64B EUR (111%", pe: "Fwd 22.7x (FY26E EPS 9.75 EUR). Trailing 32.2x. Tanszy niz ETN (28x)", revGrowth: "+9% FY25 organic (40.22B EUR). FY26 guide +7-10% organic. Long-term CAGR", moat: "Grid-to-Chip = JEDYNA firma oferujaca kompletny stos od rozdzielnicy SN po chlodzenie", dividend: "1.83% (4.20 EUR, rosnaca)", hasDR: true, verdict: "SIGNAL CHANGE blue->green. Schneider Electric = Grid-to-Chip lider z NAJBARDZIEJ ZINTEGROWANYM st..." },
-      { ticker: "ENR.DE", name: "Siemens Energy (EUR)", price: 171, analyzed: false, fairValueLow: 110, fairValueHigh: 170, entryZone: 95, bargain: 70, expensive: 220, analystTarget: 166, signal: "red", conviction: "MEDIUM", note: "STUB #73. Brak DR.", pe: "TTM ~70x (Gamesa distortion). Fwd ~36x (FY26E EPS €4.11). EV/Sales", revGrowth: "TTM ~€39B. FY26E €44B (+13%). EBITDA FY26E €6.3B (+61%!). Net profit FY26E", moat: "GRID TECHNOLOGIES = TRANSFORMATORY + HVDC + ROZDZIELNICE HV. Kazdy nowy AI DC potrzebuje", dividend: "0.49% (€0.70/yr)", hasDR: false, verdict: "Stub entry #73. Czekam na DR." },
+      { ticker: "ENR.DE", name: "Siemens Energy (EUR)", price: 171, analyzed: true, fairValueLow: 150, fairValueHigh: 210, entryZone: 120, bargain: 90, expensive: 250, analystTarget: 166, signal: "blue", conviction: "HIGH", note: "DEEP RESEARCH: W strefie FV. JEDYNA firma laczaca generacje (Gas Services) i przesyl (Grid Technologies). Backlog 146B EUR rekord. 60% zamowien turbin gazowych od DC operators. Grid margin 19.9%. Gamesa strata -46M (z -374M r/r) → cel break-even FY2026", pe: "Fwd ~40x (FY26E EPS €4.11). Trailing ~78x. EV/EBITDA fwd ~18-20x. PEG 0.77", revGrowth: "+15.2% FY25 (€39.1B). Q1 FY26 €10.3B, PbSI €1.16B (marza 11.3%, 2.4x r/r). FY26 guide €43.7B (+11-13%). Zysk netto FY26E €3-4B", moat: "GRID TECHNOLOGIES = transformatory + HVDC (lead time 128 tyg = 2.5 roku!). Deficyt 30% w USA. Gas Services: turbiny gazowe wyprzedane do 2028. Jedyna firma gen+przesyl w jednym portfelu", dividend: "0.42% (€0.70/yr, pierwsza od 4 lat). Buyback 6B EUR + div = 10B EUR do FY2028", hasDR: true, verdict: "DEEP RESEARCH sesja 8. Siemens Energy = NAJLEPSZA transformacja w historii DAX (€7→€171). Backlog 146B, net cash €8B, Grid margin 20%, DC exposure 60%. Risk: P/E 40x, Gamesa break-even MUSI się zrealizować, Siemens AG sprzedaje." },
       { ticker: "CLS", name: "Celestica", price: 387, analyzed: true, fairValueLow: 200, fairValueHigh: 300, entryZone: 175, bargain: 140, expensive: 380, analystTarget: 105, signal: "red", conviction: "LOW", note: "Brak DR. AI server manufacturer/integrator. Buduje raki dla hyperscalerow. Jensen: 200 pods/week = Celestica builds them. HPS segment +50%.", pe: "~22x fwd", revGrowth: "+20% FY25E ($10B+)", moat: "AI server/rack assembly dla hyperscalerow. HPS segment (DC) = 65%+ rev. Dell competitor w AI", dividend: "0%", hasDR: true, verdict: "Brak deep research. Stub entry. Buduje fizyczne raki AI — Jensen's 200 pods/week vision." },
     { ticker: "MOD", name: "Modine Manufacturing", price: 250, analyzed: false, fairValueLow: 150, fairValueHigh: 280, entryZone: 130, bargain: 100, expensive: 350, analystTarget: 260, signal: "yellow", conviction: "MEDIUM", note: "STUB #85. Brak DR. LIQUID COOLING specialist dla high-density AI racks. Inny wektor niz VRT (broader HVAC) i TT (commercial). Skoncentrowany na thermal", pe: "~25x trailing. Margin expansion z AI cooling mix shift", revGrowth: "~+15-20% r/r napedzany AI DC liquid cooling demand", moat: "Liquid cooling expertise: direct-to-chip, rear door heat exchangers, CDUs. AI GPU density", dividend: "~0.3%", hasDR: false, verdict: "Stub #85. Modine = liquid cooling specialist. GPU power density wymusza liquid cooling. Potrzebna..." },
 
@@ -704,24 +706,13 @@ export default function Dashboard() {
           var pctVsFV = ((s.price / mid - 1) * 100);
           var status = s.price < s.fairValueLow ? "OKAZJA" : s.price <= mid ? "FAIR VALUE" : s.price <= s.fairValueHigh ? "POWYŻEJ FV" : "PRZEPŁACONE";
           var statusColor = status === "OKAZJA" ? "#4ADE80" : status === "FAIR VALUE" ? "#60A5FA" : status === "POWYŻEJ FV" ? "#FACC15" : "#F87171";
-          var hasDR = s.hasDR;
-          var drDate = "";
-          if (hasDR) {
-            var drDates = {
-              "MRVL": "22 mar", "TMO": "22 mar", "ARRY": "22 mar", "CRDO": "25 mar", "BE": "25 mar", "SNDK": "25 mar",
-              "NVDA": "25 mar", "AVGO": "25 mar", "QCOM": "25 mar", "MU": "25 mar", "005930.KS": "25 mar", "000660.KS": "25 mar",
-              "AAPL": "25 mar", "WDC": "25 mar", "AMD": "26 mar", "GOOGL": "26 mar", "GEV": "26 mar", "VRT": "26 mar",
-              "ETN": "26 mar", "ASML": "26 mar", "SK Hynix": "25 mar",
-              "TSM": "26 mar", "LRCX": "26 mar", "AMAT": "26 mar", "MARA": "26 mar", "CLSK": "26 mar", "IREN": "26 mar", "FSLR": "26 mar", "SCCO": "26 mar", "NEE": "26 mar", "CEG": "26 mar", "POWL": "26 mar", "PWR": "26 mar", "AMZN": "26 mar", "MSFT": "27 mar", "META": "27 mar"
-            };
-            drDate = drDates[s.ticker] || "25 mar";
-          }
+          var rsi = RSI_DATA[s.ticker] || null;
           var upside = s.fairValueHigh > s.price ? ((s.fairValueHigh / s.price - 1) * 100) : 0;
           var downside = s.entryZone < s.price ? ((1 - s.entryZone / s.price) * 100) : 1;
           var rrRatio = downside > 0 ? (upside / downside) : (upside > 0 ? 99 : 0);
           var rrLabel = rrRatio > 9.9 ? "1:9.9+" : (downside > 0 ? "1:" + rrRatio.toFixed(1) : "—");
           var rrColor = rrRatio >= 3 ? "#4ADE80" : rrRatio >= 1.5 ? "#60A5FA" : rrRatio >= 0.8 ? "#FACC15" : "#F87171";
-          return { ticker: s.ticker, name: s.name, price: s.price, fvLow: s.fairValueLow, fvHigh: s.fairValueHigh, expensive: s.expensive || 0, pctVsFV: pctVsFV, status: status, statusColor: statusColor, signal: s.signal, hasDR: hasDR, drDate: drDate, rrRatio: rrRatio, rrLabel: rrLabel, rrColor: rrColor, upside: upside, downside: downside };
+          return { ticker: s.ticker, name: s.name, price: s.price, fvLow: s.fairValueLow, fvHigh: s.fairValueHigh, expensive: s.expensive || 0, pctVsFV: pctVsFV, status: status, statusColor: statusColor, signal: s.signal, rsi: rsi, rrRatio: rrRatio, rrLabel: rrLabel, rrColor: rrColor, upside: upside, downside: downside };
         });
         var doSort = function(key) { if (sortKey === key) { setSortDir(-sortDir); } else { setSortKey(key); setSortDir(1); } };
         var sorted = rows.slice().sort(function(a, b) {
@@ -729,6 +720,7 @@ export default function Dashboard() {
           if (sortKey === "pct") return (a.pctVsFV - b.pctVsFV) * sortDir;
           if (sortKey === "status") { var o = { "OKAZJA": 0, "FAIR VALUE": 1, "POWYŻEJ FV": 2, "PRZEPŁACONE": 3 }; return (o[a.status] - o[b.status]) * sortDir; }
           if (sortKey === "rr") return (a.rrRatio - b.rrRatio) * sortDir;
+          if (sortKey === "rsi") return ((a.rsi||50) - (b.rsi||50)) * sortDir;
           return 0;
         });
         var thS = { padding: "6px 8px", fontSize: 10, fontWeight: 600, color: "#A1A19A", textAlign: "left", borderBottom: "1px solid #2A2A26", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" };
@@ -755,8 +747,7 @@ export default function Dashboard() {
                 <th style={Object.assign({}, thS, {textAlign:"right"})} onClick={function(){doSort("pct")}}>vs FV {sortKey==="pct" ? (sortDir>0?"\u25B2":"\u25BC"):""}</th>
                 <th style={Object.assign({}, thS, {textAlign:"center"})} onClick={function(){doSort("rr")}}>R/R {sortKey==="rr" ? (sortDir>0?"\u25B2":"\u25BC"):""}</th>
                 <th style={thS} onClick={function(){doSort("status")}}>Status {sortKey==="status" ? (sortDir>0?"\u25B2":"\u25BC"):""}</th>
-                <th style={thS}>DR</th>
-                <th style={Object.assign({}, thS, {textAlign:"center"})}>Ostatnia DR</th>
+                <th style={Object.assign({}, thS, {textAlign:"center"})} onClick={function(){doSort("rsi")}}>RSI {sortKey==="rsi" ? (sortDir>0?"\u25B2":"\u25BC"):""}</th>
               </tr></thead>
               <tbody>{sorted.map(function(r) {
                 var pctColor = r.price < r.fvLow ? "#4ADE80" : r.price <= (r.fvLow + r.fvHigh) / 2 ? "#60A5FA" : r.price <= r.fvHigh ? "#FACC15" : "#F87171";
@@ -770,8 +761,7 @@ export default function Dashboard() {
                   <td style={Object.assign({}, tdS, {textAlign:"right", fontWeight:600, color:pctColor, fontVariantNumeric:"tabular-nums"})}>{(r.pctVsFV >= 0 ? "+" : "") + r.pctVsFV.toFixed(0) + "%"}</td>
                   <td style={Object.assign({}, tdS, {textAlign:"center", fontWeight:600, color:r.rrColor, fontSize:10})}>{r.rrLabel}</td>
                   <td style={tdS}><span style={{padding:"2px 8px", borderRadius:4, fontSize:10, fontWeight:600, color:r.statusColor, background:r.statusColor+"18"}}>{r.status}</span></td>
-                  <td style={Object.assign({}, tdS, {textAlign:"center"})}>{r.hasDR ? "\u2705" : "\u2014"}</td>
-                  <td style={Object.assign({}, tdS, {textAlign:"center", color: r.hasDR ? "#4ADE80" : "#3A3A36", fontSize:10})}>{r.hasDR ? r.drDate : "\u2014"}</td>
+                  <td style={Object.assign({}, tdS, {textAlign:"center", fontWeight:600, fontSize:11, color: r.rsi > 70 ? "#F87171" : r.rsi < 30 ? "#4ADE80" : "#A1A19A"})}>{r.rsi ? r.rsi.toFixed(0) : "\u2014"}</td>
                 </tr>;
               })}</tbody>
             </table>
