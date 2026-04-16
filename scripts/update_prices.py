@@ -21,6 +21,7 @@ v10: DOMYŚLNIE pobiera pre/post-market ceny (per-ticker, ~2-3 min).
 v11: + Howell Macro Liquidity Alarms (6 indicators, auto-patch dashboard)
      + FRED API integration for HY OAS & SOFR
      --no-macro: skip macro alarms
+v13: --fast flag DEPRECATED — premarket is ALWAYS ON (user preference)
 
 Instalacja: pip install yfinance
 Użycie:
@@ -918,8 +919,11 @@ def patch_dashboard_alarms(alarms_data, dashboard_path):
 def main():
     prices_only = "--prices-only" in sys.argv
     save_csv_flag = "--csv" in sys.argv
-    fast_mode = "--fast" in sys.argv
-    premarket = not fast_mode  # DEFAULT: premarket ON, --fast turns it off
+    # --fast flag DEPRECATED — premarket is ALWAYS ON (user preference)
+    fast_mode = False
+    premarket = True
+    if "--fast" in sys.argv:
+        print("  ⚠️  --fast flag ignored (premarket zawsze ON)")
 
     # Dashboard path: auto-detect or use --dashboard flag
     dashboard_path = None
