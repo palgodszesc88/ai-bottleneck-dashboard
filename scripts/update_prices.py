@@ -206,7 +206,7 @@ TICKERS = {
     "SOL":   {"yahoo": "SOL-USD",  "name": "Solana",         "sector": "Crypto L1",  "ccy": "USD", "signal": "blue",   "conviction": "MEDIUM"},
     "BNB":   {"yahoo": "BNB-USD",  "name": "BNB (Binance)",  "sector": "Crypto L1",  "ccy": "USD", "signal": "blue",   "conviction": "MEDIUM"},
     "XRP":   {"yahoo": "XRP-USD",  "name": "XRP",            "sector": "Crypto L1",  "ccy": "USD", "signal": "blue",   "conviction": "LOW"},
-    "HYPE":  {"yahoo": "HYPE-USD", "name": "Hyperliquid",    "sector": "Crypto L1",  "ccy": "USD", "signal": "blue",   "conviction": "MEDIUM"},
+    "HYPE":  {"yahoo": "HYPE-USD", "name": "HYPE",    "sector": "Crypto L1",  "ccy": "USD", "signal": "blue",   "conviction": "MEDIUM"},
 }
 
 CCY_SYMBOLS = {"USD": "$", "KRW": "₩", "EUR": "€", "PLN": "zł", "GBp": "p"}
