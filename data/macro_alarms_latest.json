@@ -1,5 +1,5 @@
 {
-  "date": "2026-04-16 08:29",
+  "date": "2026-04-16 08:39",
   "alarms": {
     "move": {
       "name": "MOVE Index",
@@ -11,7 +11,7 @@
     },
     "vix": {
       "name": "VIX",
-      "value": 18.1,
+      "value": 18.07,
       "threshold_yellow": 30,
       "threshold_red": 40,
       "unit": "",
@@ -19,7 +19,7 @@
     },
     "dxy": {
       "name": "DXY Dollar",
-      "value": 98.16,
+      "value": 98.2,
       "threshold_yellow": 105,
       "threshold_red": 110,
       "unit": "",
