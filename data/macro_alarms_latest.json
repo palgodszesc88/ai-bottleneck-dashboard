@@ -1,9 +1,9 @@
 {
-  "date": "2026-04-15 05:50",
+  "date": "2026-04-16 02:06",
   "alarms": {
     "move": {
       "name": "MOVE Index",
-      "value": 74.35,
+      "value": 67.94,
       "threshold_yellow": 100,
       "threshold_red": 120,
       "unit": "",
@@ -11,7 +11,7 @@
     },
     "vix": {
       "name": "VIX",
-      "value": 18.36,
+      "value": 18.17,
       "threshold_yellow": 30,
       "threshold_red": 40,
       "unit": "",
@@ -19,7 +19,7 @@
     },
     "dxy": {
       "name": "DXY Dollar",
-      "value": 98.14,
+      "value": 98.02,
       "threshold_yellow": 105,
       "threshold_red": 110,
       "unit": "",
@@ -27,7 +27,7 @@
     },
     "us10y": {
       "name": "US 10Y Yield",
-      "value": 4.26,
+      "value": 4.28,
       "threshold_yellow": 4.6,
       "threshold_red": 5.0,
       "unit": "%",
